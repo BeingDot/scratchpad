@@ -1,6 +1,3 @@
-# scratchpad
-Jotting down random thoughts
-- .net core Benchmarking 
-- mmutable colletions  in .net  core 
-- concurrent programming in .net core
-- fluent BDD
+# Repo Index
+
+- [Backlog](backlog.md) (A place to quickly jot down random thoughts)
