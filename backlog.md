@@ -10,4 +10,6 @@
 - [ ] chart down remomote workign framework and suggestions 
 - [ ] POC on  docker and  microservice 
 - [ ] Auto mapper 
+- [ ] meeting agenda with hlynur 
+
 
