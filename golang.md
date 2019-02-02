@@ -11,6 +11,20 @@
 - The length of a slice is the number of elements it contains
 - The capacity of a slice is the number of elements in the underlying array, counting from the first element in the slice
 - The range form of the for loop iterates over a slice or map
+- Go does not have classes. However, you can define methods on types. A method is a function with a special receiver argument
+- You can only declare a method with a receiver whose type is defined in the same package as the method. You cannot declare a method with a receiver whose type is defined in another package (which includes the built-in types such as int)
+- Methods with pointer receivers take either a value or a pointer as the receiver when they are called
+- An interface type is defined as a set of method signatures
+- Implicit interfaces decouple the definition of an interface from its implementation, which could then appear in any package without prearrangement
+- Interface under the hood can be thought of as a tuple with value & concrete type `(value, type)`
+- A nil interface value holds neither value nor concrete types. Calling a method on a nil interface is a run-time error because there is no type inside the interface tuple to indicate which concrete method to call
+- The interface type that specifies zero methods is known as the empty interface
+- An empty interface may hold values of any type. (Every type implements at least zero methods.)
+- Empty interfaces are used by code that handles values of unknown type. For example, fmt.Print takes any number of arguments of type interface{}
+- A goroutine is a lightweight thread managed by the Go runtime
+- Channels are a typed conduit through which you can send and receive values with the channel operator, `<-`
+- The select statement lets a goroutine wait on multiple communication operations
+- If we don't need communication & if we just want to make sure only one goroutine can access a variable at a time to avoid conflicts then we use `sync.Mutex`
 
 ## Syntax
 
@@ -136,4 +150,130 @@ var m = map[string]Vertex{
 delete(m, key)
 elem, ok := m[key]
 
+// closures
+func fibonacci() func() int {
+	x, y, z := 0, 1, 0
+	return func () int {
+		z, x, y = x, y, x + y
+		return z
+	}
+}
+
+func main() {
+	f := fibonacci()
+	for i := 0; i < 10; i++ {
+		fmt.Println(f())
+	}
+}
+
+// methods
+type Vertex struct {
+	X, Y float64
+}
+
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func (v *Vertex) Scale(f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+var v Vertex
+v.Scale(5)  // OK
+p := &v
+p.Scale(10) // OK
+
+var v Vertex
+fmt.Println(v.Abs()) // OK
+p := &v
+fmt.Println(p.Abs()) // OK
+
+// interfaces
+type Abser interface {
+	Abs() float64
+}
+
+var i interface{}
+t, ok := i.(T) // type assertion
+
+switch v := i.(type) {
+case T:
+    // here v has type T
+case S:
+    // here v has type S
+default:
+    // no match; here v has the same type as i
+}
+
+// errors
+type error interface {
+    Error() string
+}
+
+i, err := strconv.Atoi("42")
+if err != nil {
+    fmt.Printf("couldn't convert number: %v\n", err)
+    return
+}
+fmt.Println("Converted integer:", i)
+
+// readers
+func (T) Read(b []byte) (n int, err error) // io.Reader interface
+
+type MyReader struct{}
+
+func (r MyReader) Read(b []byte) (n int, err error) {
+	n = len(b)
+	for i:=0; i < n; i++ {
+		b[i] = 'A'
+	}
+	return n, nil
+}
+
+func main() {
+	reader.Validate(MyReader{})
+}
+
+// images
+type Image interface {
+    ColorModel() color.Model
+    Bounds() Rectangle
+    At(x, y int) color.Color
+}
+
+// goroutines
+go f(x, y, z)
+
+// channels
+ch := make(chan int)
+
+ch <- v    // Send v to channel ch.
+v := <-ch  // Receive from ch, and
+           // assign value to v.
+
+ch := make(chan int, 100) // buffer of 100
+
+v, ok := <-ch
+
+close(ch)
+
+// select
+select {
+case c <- x:
+    x, y = y, x+y
+case <-quit:
+    fmt.Println("quit")
+    return
+}
+
+type Tree struct {
+    Left  *Tree
+    Value int
+    Right *Tree
+}
+
+sync.Mutex.Lock()
+sync.Mutex.Unlock()
 ```
